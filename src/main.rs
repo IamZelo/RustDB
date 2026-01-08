@@ -187,6 +187,48 @@ fn select_where(table_name: &str, col_name: &str, target_id: i32) {
     }
 }
 
+fn delete_row(table_name: &str, col_name: &str, target_id: i32) {
+    let mut table = load_table(table_name);
+    if let Some(column_data) = table.data.get(col_name) {
+        // Find the index 
+        let mut found_index = None;
+            for (i, data) in column_data.iter().enumerate() {
+                if let DataType::Integer32(val) = data {
+                    if *val == target_id {
+                        found_index = Some(i);
+                        break;
+                    }
+                }
+            }
+
+        // If found, remove that index from ALL columns
+        match found_index {
+            Some(i) => {
+                for col in &table.columns {
+                    if let Some(data_vec) = table.data.get_mut(col) {
+                        data_vec.remove(i);
+                    }
+                }
+                save_table(&table);
+                println!("Row deleted successfully.");
+            },
+            None => println!("Error: No row found with {} = {}", col_name, target_id),
+        }
+    } else {
+        println!("Column {} not found", col_name);
+    }
+}
+
+fn count_rows (table_name: &str){
+    let table = load_table(table_name);
+    let row_count = if let Some(first_col) = table.columns.first() {
+        table.data.get(first_col).unwrap().len()
+    } else { 
+        0 
+    };
+    println!("Table '{}' contains {} row(s).", table_name, row_count);
+}
+
 fn print_help() {
     println!("DDL:");
     println!("  CREATE TABLE <name>");
@@ -272,6 +314,17 @@ fn main() {
                 }
             }
 
+            ["DELETE", "FROM", table, "WHERE", col, "=", val] => {
+                if let Ok(id) = val.parse::<i32>() {
+                    delete_row(table, col, id);
+                } else {
+                    println!("Error: ID must be an integer.");
+                }
+            }
+            
+            ["COUNT", table] => {
+                count_rows(table);
+            }
 
             ["HELP"] => print_help(),
             ["EXIT"] => break,

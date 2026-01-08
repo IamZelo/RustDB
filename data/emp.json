@@ -1,15 +1,49 @@
 {
   "name": "emp",
   "fields": {
-    "name": "str",
-    "id": "in"
+    "age": "int",
+    "name": "string",
+    "salary": "float",
+    "id": "int"
   },
   "columns": [
     "id",
-    "name"
+    "name",
+    "age",
+    "salary"
   ],
   "data": {
-    "name": [],
-    "id": []
+    "salary": [
+      {
+        "Float32": 14.5
+      },
+      {
+        "Float32": 10.0
+      }
+    ],
+    "id": [
+      {
+        "Integer32": 1
+      },
+      {
+        "Integer32": 3
+      }
+    ],
+    "name": [
+      {
+        "String": "Harsh"
+      },
+      {
+        "String": "Aman"
+      }
+    ],
+    "age": [
+      {
+        "Integer32": 20
+      },
+      {
+        "Integer32": 19
+      }
+    ]
   }
 }

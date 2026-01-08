@@ -4,6 +4,9 @@ use std::fs::{self};
 
 use serde::{Serialize, Deserialize};
 
+#[macro_use] extern crate prettytable;
+use prettytable::{Table as PTable, Row, Cell};
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 enum DataType {
     String(String),
@@ -19,6 +22,16 @@ pub struct Table {
     data: HashMap<String, Vec<DataType>>, 
 }
 
+impl std::fmt::Display for DataType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            DataType::String(s) => write!(f, "{}", s),
+            DataType::Integer32(i) => write!(f, "{}", i),
+            DataType::Float32(fl) => write!(f, "{}", fl),
+        }
+    }
+}
+
 
 fn tokenize(input: &str) -> Vec<&str> {
     input.trim().split_whitespace().collect()
@@ -26,6 +39,14 @@ fn tokenize(input: &str) -> Vec<&str> {
 
 
 fn create_table(name: &str, cols: Vec<(&str, &str)>) {
+    let path = format!("data/{}.json", name);
+    
+    // Check if file exists
+    if std::path::Path::new(&path).exists() {
+        println!("Error: Table '{}' already exists!", name);
+        return;
+    }   
+
     let mut fields: HashMap<String, String> = HashMap::new();
     let mut data: HashMap<String, Vec<DataType>> = HashMap::new();
     let mut columns: Vec<String> = Vec::new(); // Store order
@@ -94,12 +115,12 @@ fn insert_row(table_name: &str, values: Vec<&str>) {
 fn select_all(table_name: &str) {
     let table = load_table(table_name);
     
+    let mut p_table = PTable::new();
     // Print Header
-    for col in &table.columns {
-        print!("{:15}", col);
-    }
-    println!();
-    println!("{}", "-".repeat(table.columns.len() * 15));
+    let header_cells: Vec<Cell> = table.columns.iter()
+        .map(|col| Cell::new(col).style_spec("bFg"))
+        .collect();
+    p_table.add_row(Row::new(header_cells));
 
     // Get row count from the first column
     let row_count = if let Some(first_col) = table.columns.first() {
@@ -110,16 +131,16 @@ fn select_all(table_name: &str) {
 
     // Print Rows
     for i in 0..row_count {
+        let mut row_cells = Vec::new();
         for col in &table.columns {
-            // Simplified print for demo
-            match &table.data[col][i] {
-                DataType::Integer32(v) => print!("{:15} ", v),
-                DataType::Float32(v) => print!("{:15} ", v),
-                DataType::String(v) => print!("{:15} ", v),
-            }
+            // Get the value at index 'i' for this column
+            let val = &table.data[col][i]; 
+            row_cells.push(Cell::new(&val.to_string()));
         }
-        println!();
+        
+        p_table.add_row(Row::new(row_cells));
     }
+    p_table.printstd();
 }
 
 
@@ -128,7 +149,6 @@ fn select_where(table_name: &str, col_name: &str, target_id: i32) {
     
     // Get the column to search
     if let Some(column_data) = table.data.get(col_name) {
-
         // Find the index where the data matches our target
         let mut found_index = None;
         for (i, data) in column_data.iter().enumerate() {
@@ -143,10 +163,22 @@ fn select_where(table_name: &str, col_name: &str, target_id: i32) {
         // If found, print that index for ALL columns
         match found_index {
             Some(i) => {
+                let mut p_table = PTable::new();
+
+            // Create Header
+            let header: Vec<Cell> = table.columns.iter()
+                .map(|c| Cell::new(c).style_spec("bFg"))
+                .collect();
+            p_table.add_row(Row::new(header));
+
+            // Add the Found Row
+            let mut row_cells = Vec::new();
                 for col in &table.columns {
-                    print!("{:?} ", table.data[col][i]);
+                    let val = &table.data[col][i];
+                    row_cells.push(Cell::new(&val.to_string()));
                 }
-                println!();
+            p_table.add_row(Row::new(row_cells));
+            p_table.printstd();
             },
             None => println!("No row found with {} = {}", col_name, target_id),
         }
@@ -224,7 +256,7 @@ fn main() {
             ["SHOW", "TABLES"] => show_tables(),
             ["DROP", "TABLE", table] => drop_table(table),
 
-            ["INSERT", table, values @ ..] => {
+            ["INSERT", "INTO", table, values @ ..] => {
                 insert_row(table, values.to_vec());
             }
             ["SELECT", "*", "FROM", table] => {

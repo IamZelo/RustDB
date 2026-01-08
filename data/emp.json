@@ -1,0 +1,15 @@
+{
+  "name": "emp",
+  "fields": {
+    "name": "str",
+    "id": "in"
+  },
+  "columns": [
+    "id",
+    "name"
+  ],
+  "data": {
+    "name": [],
+    "id": []
+  }
+}

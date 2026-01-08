@@ -1,0 +1,41 @@
+{
+  "name": "post",
+  "fields": {
+    "descp": "string",
+    "id": "int"
+  },
+  "columns": [
+    "id",
+    "descp"
+  ],
+  "data": {
+    "id": [
+      {
+        "Integer32": 1
+      },
+      {
+        "Integer32": 2
+      },
+      {
+        "Integer32": 3
+      },
+      {
+        "Integer32": 4
+      }
+    ],
+    "descp": [
+      {
+        "String": "HELLO"
+      },
+      {
+        "String": "PYTHON"
+      },
+      {
+        "String": "JAVA"
+      },
+      {
+        "String": "RUST"
+      }
+    ]
+  }
+}

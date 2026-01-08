@@ -1,0 +1,29 @@
+{
+  "name": "user",
+  "fields": {
+    "name": "string",
+    "id": "int"
+  },
+  "columns": [
+    "id",
+    "name"
+  ],
+  "data": {
+    "name": [
+      {
+        "String": "harsh"
+      },
+      {
+        "String": "zelo"
+      }
+    ],
+    "id": [
+      {
+        "Integer32": 1
+      },
+      {
+        "Integer32": 2
+      }
+    ]
+  }
+}

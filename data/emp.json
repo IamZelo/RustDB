@@ -1,10 +1,10 @@
 {
   "name": "emp",
   "fields": {
-    "age": "int",
-    "name": "string",
+    "id": "int",
     "salary": "float",
-    "id": "int"
+    "name": "string",
+    "age": "int"
   },
   "columns": [
     "id",
@@ -13,36 +13,36 @@
     "salary"
   ],
   "data": {
-    "salary": [
+    "age": [
       {
-        "Float32": 14.5
+        "Integer32": 24
       },
       {
-        "Float32": 10.0
+        "Integer32": 28
+      }
+    ],
+    "name": [
+      {
+        "String": "Max"
+      },
+      {
+        "String": "Daniel"
       }
     ],
     "id": [
       {
-        "Integer32": 1
+        "Integer32": 2
       },
       {
         "Integer32": 3
       }
     ],
-    "name": [
+    "salary": [
       {
-        "String": "Harsh"
+        "Float32": 12.0
       },
       {
-        "String": "Aman"
-      }
-    ],
-    "age": [
-      {
-        "Integer32": 20
-      },
-      {
-        "Integer32": 19
+        "Float32": 22.5
       }
     ]
   }

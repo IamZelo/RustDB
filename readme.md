@@ -5,12 +5,12 @@ This project was designed to explore database internals, specifically **column-o
 
 ## Features
 
-* **Columnar Storage Engine:** Stores data by columns (vectors) rather than rows for efficient aggregation.
-* **Persistent Storage:** Saves tables as JSON files using `serde`.
-* **SQL-Like Interface:** Supports DDL and DML commands.
-* **Formatted Output:** Uses `prettytable-rs` for CLI visualization.
-* **Dockerized:** Ready for containerized deployment.
-* **Type System:** Supports `Integer32`, `Float32`, and `String` with strong type validation.
+- **Columnar Storage Engine:** Stores data by columns (vectors) rather than rows for efficient aggregation.
+- **Persistent Storage:** Saves tables as JSON files using `serde`.
+- **SQL-Like Interface:** Supports DDL and DML commands.
+- **Formatted Output:** Uses `prettytable-rs` for CLI visualization.
+- **Dockerized:** Ready for containerized deployment.
+- **Type System:** Supports `Integer32`, `Float32`, and `String` with strong type validation.
 
 ---
 
@@ -52,21 +52,21 @@ docker run -it -v $(pwd)/data:/app/data rust-dbms
 
 ### Data Definition (DDL)
 
-| Command | Description | Example |
-| --- | --- | --- |
+| Command          | Description                             | Example                                         |
+| ---------------- | --------------------------------------- | ----------------------------------------------- |
 | **CREATE TABLE** | Creates a new table with typed columns. | `CREATE TABLE users id:int name:string age:int` |
-| **DROP TABLE** | Deletes a table and its data file. | `DROP TABLE users` |
-| **SHOW TABLES** | Lists all existing tables. | `SHOW TABLES` |
+| **DROP TABLE**   | Deletes a table and its data file.      | `DROP TABLE users`                              |
+| **SHOW TABLES**  | Lists all existing tables.              | `SHOW TABLES`                                   |
 
 ### Data Manipulation (DML)
 
-| Command | Description | Example |
-| --- | --- | --- |
-| **INSERT** | Adds a row. (Must match column order/types). | `INSERT users 1 harsh 25` |
-| **SELECT** | Prints all rows in the table. | `SELECT * FROM users` |
-| **SELECT WHERE** | Finds rows by integer value (Indexed Scan). | `SELECT * FROM users WHERE id = 1` |
-| **DELETE** | Removes a row by ID. | `DELETE FROM users WHERE id = 1` |
-| **COUNT** | Returns the total number of rows. | `COUNT users` |
+| Command          | Description                                  | Example                            |
+| ---------------- | -------------------------------------------- | ---------------------------------- |
+| **INSERT**       | Adds a row. (Must match column order/types). | `INSERT users 1 harsh 25`          |
+| **SELECT**       | Prints all rows in the table.                | `SELECT * FROM users`              |
+| **SELECT WHERE** | Finds rows by integer value (Indexed Scan).  | `SELECT * FROM users WHERE id = 1` |
+| **DELETE**       | Removes a row by ID.                         | `DELETE FROM users WHERE id = 1`   |
+| **COUNT**        | Returns the total number of rows.            | `COUNT users`                      |
 
 ---
 
@@ -98,15 +98,69 @@ pub struct Table {
 
 Data is serialized to `.json` files in the `data/` directory.
 
-* **Read:** Loads the entire JSON into memory on `load_table`.
-* **Write:** Serializes the struct back to JSON on every `INSERT`/`DELETE`.
+- **Read:** Loads the entire JSON into memory on `load_table`.
+- **Write:** Serializes the struct back to JSON on every `INSERT`/`DELETE`.
 
 ---
 
+## Demo
+
+Here is the DBMS running in the terminal:
+
+![RustDBMS CLI Screenshot](assets/demo.png)
+
+emp.json generated for persistence
+
+```json
+{
+  "name": "emp",
+  "fields": {
+    "id": "int",
+    "salary": "float",
+    "name": "string",
+    "age": "int"
+  },
+  "columns": ["id", "name", "age", "salary"],
+  "data": {
+    "age": [
+      {
+        "Integer32": 24
+      },
+      {
+        "Integer32": 28
+      }
+    ],
+    "name": [
+      {
+        "String": "Max"
+      },
+      {
+        "String": "Daniel"
+      }
+    ],
+    "id": [
+      {
+        "Integer32": 2
+      },
+      {
+        "Integer32": 3
+      }
+    ],
+    "salary": [
+      {
+        "Float32": 12.0
+      },
+      {
+        "Float32": 22.5
+      }
+    ]
+  }
+}
+```
+
 ## Future Roadmap
 
-* Implement **B-Tree Indexing** for faster lookups (avoid full scans).
-* Support string/float in `WHERE` clauses.
-
+- Implement **B-Tree Indexing** for faster lookups (avoid full scans).
+- Support string/float in `WHERE` clauses.
 
 ---
